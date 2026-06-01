@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EasyPageX Jackpot 🎰</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Righteous&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --yellow: #FFE000;
+    --orange: #FF7A00;
+    --orange-dark: #cc5f00;
+    --orange-light: #FF9A33;
+    --black: #111;
+    --white: #fff;
+    --red: #FF2D2D;
+    --green: #00C853;
+    --shadow: 6px 6px 0px #111;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--yellow);
+    font-family: 'Righteous', cursive;
+    color: var(--black);
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 10px;
+    gap: 0;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* Floating background emojis */
+  .bg-emoji {
+    position: absolute;
+    font-size: clamp(2rem, 5vw, 4rem);
+    opacity: 0.13;
+    animation: floatBg 8s ease-in-out infinite;
+    pointer-events: none;
+    user-select: none;
+  }
+  @keyframes floatBg {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-18px) rotate(8deg); }
+  }
+
+  /* Title */
+  .title-wrap {
+    text-align: center;
+    margin-bottom: 6px;
+    margin-top: 0;
+  }
+  .title-top {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 2px;
+  }
+  .title-main {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(3.8rem, 11vw, 7.5rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    /* Colorful multi-color gradient */
+    background: linear-gradient(135deg, #FF2D2D 0%, #FF7A00 25%, #FFD700 50%, #00C853 75%, #2196F3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.35));
+  }
+  .title-sub {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(0.9rem, 2.2vw, 1.2rem);
+    color: #333;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 0px;
+  }
+
+  /* Machine */
+  .machine {
+    background: var(--orange);
+    border: 4px solid var(--black);
+    border-radius: 20px;
+    padding: 12px 18px 14px;
+    box-shadow: 8px 8px 0px var(--orange-dark), 14px 14px 0px #7a3a00;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    margin-top: 2px;
+  }
+
+  .machine-top {
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    color: var(--yellow);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 0 #7a3a00;
+    font-weight: bold;
+  }
+
+  /* Reels */
+  .reels {
+    display: flex;
+    gap: 10px;
+    background: #c85e00;
+    border-radius: 12px;
+    padding: 10px 12px;
+    border: 3px solid #7a3a00;
+  }
+
+  .reel {
+    width: clamp(78px, 17vw, 115px);
+    height: clamp(78px, 17vw, 115px);
+    background: var(--white);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(2.4rem, 6.5vw, 4.2rem);
+    border: 3px solid #eee;
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow 0.2s;
+  }
+
+  .reel.spinning {
+    animation: reelSpin 0.12s linear infinite;
+  }
+
+  @keyframes reelSpin {
+    0%   { transform: scaleY(1);   filter: blur(0); }
+    25%  { transform: scaleY(0.8); filter: blur(2px); }
+    50%  { transform: scaleY(1);   filter: blur(0); }
+    75%  { transform: scaleY(0.8); filter: blur(2px); }
+    100% { transform: scaleY(1);   filter: blur(0); }
+  }
+
+  .reel.winner {
+    animation: winPulse 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes winPulse {
+    from { box-shadow: 0 0 0 3px var(--green), 0 0 14px var(--green); }
+    to   { box-shadow: 0 0 0 6px #00ff80, 0 0 36px #00ff80; }
+  }
+
+  /* Result label */
+  .result-label {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(0.95rem, 2.5vw, 1.25rem);
+    color: #fff;
+    letter-spacing: 1px;
+    min-height: 1.5em;
+    text-align: center;
+    text-shadow: 1px 1px 0 #7a3a00;
+    transition: all 0.3s;
+  }
+  .result-label.win  { color: #00ff80; font-size: clamp(1.1rem, 3vw, 1.5rem); text-shadow: 1px 1px 0 #003d1a; }
+  .result-label.lose { color: #ffe0b2; }
+
+  /* Screenshot hint inside machine */
+  .screenshot-hint {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(0.75rem, 1.8vw, 1rem);
+    color: #fff3;
+    letter-spacing: 1px;
+    text-align: center;
+    border: 2px dashed rgba(255,255,255,0.35);
+    border-radius: 8px;
+    padding: 5px 14px;
+    background: rgba(0,0,0,0.12);
+  }
+  .screenshot-hint span { color: #ffe082; }
+
+  /* Play button */
+  .play-btn {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    letter-spacing: 2px;
+    background: var(--yellow);
+    color: var(--black);
+    border: 4px solid var(--black);
+    border-radius: 50px;
+    padding: 13px 56px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.1s, box-shadow 0.1s;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+  }
+  .play-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.18);
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: inherit;
+  }
+  .play-btn:hover::after { opacity: 1; }
+  .play-btn:active {
+    transform: translate(3px,3px);
+    box-shadow: 3px 3px 0px #111;
+  }
+  .play-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: var(--shadow);
+  }
+
+  /* Odds label */
+  .odds {
+    font-size: clamp(0.6rem, 1.4vw, 0.78rem);
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 1px;
+    margin-top: -4px;
+    text-align: center;
+  }
+
+  /* Footer link — further down */
+  .footer-wrap {
+    margin-top: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .footer-label {
+    font-size: clamp(0.6rem, 1.4vw, 0.78rem);
+    color: #666;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .footer-link {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(0.85rem, 2vw, 1.1rem);
+    color: #333;
+    text-decoration: none;
+    letter-spacing: 1px;
+    border-bottom: 3px solid var(--orange);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .footer-link:hover { color: #000; border-color: #FF2D2D; }
+
+  /* Win overlay */
+  .win-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.84);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    text-align: center;
+    padding: 20px;
+  }
+  .win-overlay.show { display: flex; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  .win-title {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    color: var(--yellow);
+    text-shadow: 4px 4px 0 #7a6500;
+    animation: bounce 0.5s ease infinite alternate;
+  }
+  @keyframes bounce {
+    from { transform: translateY(0) scale(1); }
+    to   { transform: translateY(-12px) scale(1.04); }
+  }
+
+  .win-emojis { font-size: clamp(2.2rem, 8vw, 4.2rem); letter-spacing: 8px; }
+
+  .win-prize {
+    font-size: clamp(1rem, 3vw, 1.45rem);
+    color: #fff;
+    line-height: 1.65;
+    max-width: 520px;
+  }
+  .win-prize strong { color: var(--yellow); font-size: 1.15em; }
+
+  .win-screenshot-box {
+    background: rgba(255,224,0,0.15);
+    border: 2px dashed var(--yellow);
+    border-radius: 12px;
+    padding: 12px 28px;
+    color: var(--yellow);
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    letter-spacing: 1px;
+  }
+
+  .win-link {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--black);
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    text-decoration: none;
+    padding: 14px 36px;
+    border-radius: 50px;
+    border: 4px solid #fff;
+    box-shadow: 5px 5px 0 rgba(255,255,255,0.2);
+    transition: transform 0.1s;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .win-link:hover { transform: scale(1.05); }
+
+  .close-btn {
+    margin-top: 4px;
+    background: transparent;
+    border: 2px solid #555;
+    color: #888;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1rem;
+    padding: 8px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+  .close-btn:hover { border-color: #aaa; color: #ccc; }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 20px;
+    top: -20px;
+    border-radius: 3px;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+    z-index: 200;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background floating emojis -->
+<script>
+  const BG = ['💻','📱','💰','🤑','💸','🖥️','⌨️','🖱️','📡','💳','💎','👆','🤙','✌️','🤞','👍','🙌','💹','📲','🔋'];
+  BG.forEach((e) => {
+    const d = document.createElement('div');
+    d.className = 'bg-emoji';
+    d.textContent = e;
+    d.style.left = (Math.random() * 95) + '%';
+    d.style.top = (Math.random() * 90) + '%';
+    d.style.animationDelay = (Math.random() * 6) + 's';
+    d.style.animationDuration = (5 + Math.random() * 6) + 's';
+    document.body.appendChild(d);
+  });
+</script>
+
+<div class="title-wrap">
+  <div class="title-top">⚡ Welcome to ⚡</div>
+  <div class="title-main">EASYPAGEX</div>
+  <div class="title-sub">🎰 The Jackpot Game 🎰</div>
+</div>
+
+<div class="machine">
+  <div class="machine-top">▸ MATCH 3 · WIN FREE · SPIN TO WIN ◂</div>
+  <div class="reels">
+    <div class="reel" id="r1">❓</div>
+    <div class="reel" id="r2">❓</div>
+    <div class="reel" id="r3">❓</div>
+  </div>
+  <div class="result-label" id="result">Hit PLAY to spin!</div>
+  <button class="play-btn" id="playBtn" onclick="spin()">🎰 PLAY</button>
+  <div class="screenshot-hint">📸 <span>Take a screenshot</span> to claim your prize!</div>
+  <div class="odds">Match 3 identical emojis → WIN a FREE Landing Page!</div>
+</div>
+
+<div class="footer-wrap">
+  <div class="footer-label">Visit us at</div>
+  <a class="footer-link" href="https://easypagex.github.io/48/" target="_blank">🌐 easypagex.github.io/48</a>
+</div>
+
+<!-- Win overlay -->
+<div class="win-overlay" id="winOverlay">
+  <div class="win-title">🏆 JACKPOT! 🏆</div>
+  <div class="win-emojis" id="winEmojis"></div>
+  <div class="win-prize">
+    <strong>YOU WON A FREE LANDING PAGE!</strong><br><br>
+    Match confirmed — three of a kind!
+  </div>
+  <div class="win-screenshot-box">📸 TAKE A SCREENSHOT NOW to claim your prize!</div>
+  <a class="win-link" href="https://easypagex.github.io/48/" target="_blank">🚀 Claim Your Free Page →</a>
+  <button class="close-btn" onclick="closeWin()">✕ Keep Playing</button>
+</div>
+
+<script>
+  const EMOJIS = [
+    '💻','📱','💰','🤑','💸','🖥️','📡','💳','💎','📲',
+    '👆','🤙','✌️','🤞','👍','🙌','🤏','☝️','👊','🫰',
+    '💹','🏦','💵','💴','💶','🔋','🖱️','⌨️','🖨️','📀'
+  ];
+
+  const r1 = document.getElementById('r1');
+  const r2 = document.getElementById('r2');
+  const r3 = document.getElementById('r3');
+  const result = document.getElementById('result');
+  const playBtn = document.getElementById('playBtn');
+
+  function rnd() { return EMOJIS[Math.floor(Math.random() * EMOJIS.length)]; }
+
+  function spin() {
+    playBtn.disabled = true;
+    result.className = 'result-label';
+    result.textContent = '🎲 Spinning...';
+    [r1,r2,r3].forEach(r => { r.className = 'reel spinning'; });
+
+    // 80% chance to win: pick a winning emoji, use it for all 3
+    const willWin = Math.random() < 0.35;
+    let stops;
+    if (willWin) {
+      const w = rnd();
+      stops = [w, w, w];
+    } else {
+      // Guarantee no match
+      let a = rnd(), b, c;
+      do { b = rnd(); } while (b === a);
+      do { c = rnd(); } while (c === a || c === b);
+      stops = [a, b, c];
+    }
+
+    const delays = [600, 1000, 1500];
+
+    [r1,r2,r3].forEach((reel, i) => {
+      const interval = setInterval(() => { reel.textContent = rnd(); }, 80);
+      setTimeout(() => {
+        clearInterval(interval);
+        reel.textContent = stops[i];
+        reel.className = 'reel';
+        if (i === 2) {
+          setTimeout(() => checkResult(stops), 200);
+        }
+      }, delays[i]);
+    });
+  }
+
+  function checkResult(stops) {
+    if (stops[0] === stops[1] && stops[1] === stops[2]) {
+      [r1,r2,r3].forEach(r => r.classList.add('winner'));
+      result.className = 'result-label win';
+      result.textContent = '🏆 JACKPOT! THREE OF A KIND!';
+      launchConfetti();
+      setTimeout(() => showWin(stops[0]), 700);
+    } else {
+      result.className = 'result-label lose';
+      result.textContent = '😅 No match — try again!';
+    }
+    playBtn.disabled = false;
+    playBtn.textContent = '🎰 SPIN AGAIN';
+  }
+
+  function showWin(emoji) {
+    document.getElementById('winEmojis').textContent = emoji + ' ' + emoji + ' ' + emoji;
+    document.getElementById('winOverlay').classList.add('show');
+  }
+
+  function closeWin() {
+    document.getElementById('winOverlay').classList.remove('show');
+    [r1,r2,r3].forEach(r => r.classList.remove('winner'));
+  }
+
+  function launchConfetti() {
+    const colors = ['#FFE000','#FF2D2D','#00C853','#fff','#FF9800','#2196F3','#FF7A00'];
+    for (let i = 0; i < 90; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.left = (Math.random() * 100) + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.width = (6 + Math.random() * 10) + 'px';
+      c.style.height = (10 + Math.random() * 16) + 'px';
+      c.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+      c.style.animationDelay = (Math.random() * 0.8) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
+      document.body.appendChild(c);
+      c.addEventListener('animationend', () => c.remove());
+    }
+  }
+</script>
+</body>
+</html>
